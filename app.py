@@ -41,7 +41,7 @@ def search():
             return render_template('result.html', imgs=imgs, search=search, cols=get_collections_name())
         else:
             img = PIL.Image.open(image)
-            imgs = get_label_from_image(img, collection)
+            imgs = retrieval_from_image(img.convert('RGB'), collection)
             return render_template('result.html', imgs=imgs, search="", cols=get_collections_name())
 
 
@@ -49,9 +49,9 @@ def search():
 def search_similar(image_name: str, collection: str, par):
     if not is_load():
         load()
-    path_image = str(image_root) + "/" + "collection_" + str(collection) + "/" + image_name + ".jpg"
+    path_image = str(image_root) + os.sep + "collection_" + str(collection) + os.sep + image_name + ".jpg"
     img = PIL.Image.open(path_image)
-    imgs = get_label_from_image(img, par)
+    imgs = retrieval_from_image(img.convert('RGB'), par)
     return render_template('result.html', imgs=imgs, search="", cols=get_collections_name())
 
 
@@ -60,7 +60,7 @@ def search_similar(image_name: str, collection: str, par):
 def get_image(image_name: str, collection: str, dim: Optional[int] = None):
     if not is_load():
         load()
-    path_image = str(image_root) + "/" + "collection_" + str(collection) + "/" + image_name + ".jpg"
+    path_image = str(image_root) + os.sep + "collection_" + str(collection) + os.sep + image_name + ".jpg"
     if dim:
         transform = targetpad_resize(1.25, int(dim), 255)
         pil_image = transform(PIL.Image.open(path_image))
@@ -150,7 +150,7 @@ def load_collection():
         c_name = ""
         for c in cn:
             c_name = c_name + c
-        path = str(image_root) + "/" + "collection_" + str(n)
+        path = str(image_root) + os.sep + "collection_" + str(n)
         if not os.path.exists(path):
             os.makedirs(path)
         else:
@@ -159,22 +159,22 @@ def load_collection():
         for j in i:
             name = request.form["name" + j.filename]
             description = request.form["description" + j.filename]
-            type = request.form["type" + j.filename]
+            product_type = request.form["type" + j.filename]
             group = request.form["group" + j.filename]
             colour = request.form["colour" + j.filename]
-            id = j.filename.split(".")
+            image_id = j.filename.split(".")
             row = {
-                "article_id": id[0],
+                "article_id": image_id[0],
                 "prod_name": name,
-                "product_type_name": type,
+                "product_type_name": product_type,
                 "product_group_name": group,
                 "colour_group_name": colour,
                 "detail_desc": description
             }
             par.append(row)
             shutil.move(server_base_path / "static" / "Image" / "temporary_file" / j.filename, path)
-            images.append(path + "/" + str(j.filename))
-        json_path = str(data_utilis.metadata_path) + "/collection_" + str(n) + ".json"
+            images.append(path + os.sep + str(j.filename))
+        json_path = str(data_utilis.metadata_path) + os.sep + "collection_" + str(n) + ".json"
         with open(json_path, 'w') as outfile:
             json.dump(par, outfile)
         fclip_path = data_utilis.set_dataset_json(c_name, rep)
@@ -199,7 +199,7 @@ def add_image_at_collection():
     names = []
     images = []
     len = 0
-    path = str(server_base_path) + "/static/Image/temporary_file"
+    path = str(server_base_path) + os.sep + "static" + os.sep + "Image" + os.sep + "temporary_file"
     if not os.path.exists(path):
         os.makedirs(path)
     else:
@@ -212,7 +212,7 @@ def add_image_at_collection():
             len = len + 1
             names.append(j.filename)
             j.save(os.path.join(app.config['UPLOAD_TEMP'], j.filename))
-            path = "Image/temporary_file/" + j.filename
+            path = "Image" + os.sep + "temporary_file" + os.sep + j.filename
             images.append(path)
     return render_template('add_metadata.html', names=names, image=images, len=len)
 
@@ -223,34 +223,34 @@ def load_image():
         load()
     images = []
     if request.method == 'POST':
-        path = str(image_root) + "/" + "collection_" + col_id
+        path = str(image_root) + os.sep + "collection_" + col_id
         collection = get_collection_from_index(int(col_id))
         par = collection.peek()['metadatas']
         for p in par:
-            images.append(path + "/" + str(p['article_id']) + ".jpg")
+            images.append(path + os.sep + str(p['article_id']) + ".jpg")
         for j in i:
             name = request.form["name" + j.filename]
             description = request.form["description" + j.filename]
-            type = request.form["type" + j.filename]
+            product_type = request.form["type" + j.filename]
             group = request.form["group" + j.filename]
             colour = request.form["colour" + j.filename]
-            id = j.filename.split(".")
+            image_id = j.filename.split(".")
             row = {
-                "article_id": id[0],
+                "article_id": image_id[0],
                 "prod_name": name,
-                "product_type_name": type,
+                "product_type_name": product_type,
                 "product_group_name": group,
                 "colour_group_name": colour,
                 "detail_desc": description
             }
             par.append(row)
             shutil.move(server_base_path / "static" / "Image" / "temporary_file" / j.filename, path)
-            images.append(path + "/" + str(j.filename))
-        json_path = str(data_utilis.metadata_path) + "/collection_" + str(col_id) + ".json"
+            images.append(path + os.sep + str(j.filename))
+        json_path = str(data_utilis.metadata_path) + os.sep + "collection_" + str(col_id) + ".json"
         with open(json_path, 'w') as outfile:
             json.dump(par, outfile)
         n = "f_clip_" + str(col_id) + ".pkl"
-        fclip_path = "dataset\\Fclip\\" + n
+        fclip_path = "dataset" + os.sep + "Fclip" + os.sep + n
         data_utilis.embedding_image(images, fclip_path)
     update_chroma()
     return redirect(url_for('home'))
@@ -260,8 +260,8 @@ def load_image():
 def delete_image(col, image):
     if not is_load():
         load()
-    json_path = str(metadata_path) + "/collection_" + str(col) + ".json"
-    f_clip_path = str(dataset_root) + "/Fclip/f_clip_" + str(col) + ".pkl"
+    json_path = str(metadata_path) + os.sep + "collection_" + str(col) + ".json"
+    f_clip_path = str(dataset_root) + os.sep + "Fclip" + os.sep + "f_clip_" + str(col) + ".pkl"
     f = open(json_path)
     data = json.load(f)
     f.close()
@@ -274,7 +274,7 @@ def delete_image(col, image):
             path_i = image_root / n / name
             os.remove(path_i)
         else:
-            path_i = str(image_root) + "/collection_" + str(col) + "/" + d['article_id'] + ".jpg"
+            path_i = str(image_root) + os.sep + "collection_" + str(col) + os.sep + d['article_id'] + ".jpg"
             new_data.append(d)
             images.append(path_i)
     with open(json_path, 'w') as outfile:
