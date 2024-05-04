@@ -7,6 +7,7 @@ import PIL.Image
 import chromadb
 import json
 import random
+import re
 
 from fashion_clip.fashion_clip import FashionCLIP
 from pathlib import Path
@@ -19,15 +20,15 @@ dataset_root = Path(__file__).absolute().parent.absolute() / 'dataset'
 image_root = dataset_root / 'Images'
 data_path = Path(__file__).absolute().parent.absolute() / 'data'
 metadata_path = dataset_root / "Metadata"
+chroma_path = str(dataset_root) + "/chroma"
 
 
 def load():
     global chroma_client
     global fclip
-    persist_path = str(dataset_root) + "/chroma"
-    chroma_client = chromadb.Client(Settings(
-        chroma_db_impl="duckdb+parquet",
-        persist_directory=persist_path))
+    chroma_client = chromadb.PersistentClient(settings=Settings(
+        persist_directory=chroma_path, allow_reset=True),
+    )
     fclip = FashionCLIP('fashion-clip')
 
 
@@ -35,26 +36,25 @@ def update_chroma():
     print("UPDATE ...")
     global chroma_client
     global fclip
-    persist_path = str(dataset_root) + "/chroma"
-    if not os.path.exists(persist_path):
-        os.makedirs(persist_path)
+    if not os.path.exists(chroma_path):
+        os.makedirs(chroma_path)
     else:
-        shutil.rmtree(persist_path)
-        os.makedirs(persist_path)
+        shutil.rmtree(chroma_path)
+        os.makedirs(chroma_path)
     if is_load():
         chroma_client.reset()
-    chroma_client = chromadb.Client(Settings(
-        chroma_db_impl="duckdb+parquet",
-        persist_directory=persist_path))
+    chroma_client = chromadb.PersistentClient(settings=Settings(
+        persist_directory=chroma_path, allow_reset=True),
+    )
     fclip = FashionCLIP('fashion-clip')
     f = open(dataset_root / 'dataset.json')
     data = json.load(f)
     for i in data:
-        dict = {
+        metadata_dict = {
             "representative": i["representative"]
         }
-        collection = chroma_client.create_collection(name=i['name'], metadata=dict)
-        s = str(server_base_path) + "/" + i['metadata_path']
+        collection = chroma_client.create_collection(name=i['name'], metadata=metadata_dict)
+        s = str(server_base_path) + os.sep + i['metadata_path']
         f = open(s, encoding="utf8")
         d = json.load(f)
         document = []
@@ -73,7 +73,6 @@ def update_chroma():
             metadatas=metadatas,
             ids=ids
         )
-    chroma_client.persist()
 
 
 def get_n_collection():
@@ -81,31 +80,28 @@ def get_n_collection():
 
 
 def get_collection_from_index(i):
-    n = 1
     for col in chroma_client.list_collections():
-        if n == i:
+        if col.name == 'collection' + str(i):
             return col
-        n = n + 1
 
 
 def get_collections_name():
     col_name = []
-    i = 0
     for col in chroma_client.list_collections():
-        i = i + 1
+        i = int(re.search(r'\d+', col.name).group())
         row = []
         row.append(i)
         row.append(col.name)
         col_name.append(row)
-    return col_name
+    return sorted(col_name, key=lambda x: x[1])
 
 
-def get_collections_name_from_id(id):
+def get_collections_name_from_id(id_col):
     col_name = ""
     i = 0
     for col in chroma_client.list_collections():
         i = i + 1
-        if i == id:
+        if i == id_col:
             return col.name
     return col_name
 
@@ -136,23 +132,25 @@ def is_load():
 
 
 def get_url(root: str, name: str):
-    return str(server_base_path) + "/" + str(root) + "/" + name + ".jpg"
+    return str(server_base_path) + os.sep + str(root) + os.sep + name + ".jpg"
 
 
 def setParam(image_name: str, collection: int):
     col = get_collection_from_index(int(collection))
     param = []
-    char = col.get(where={"article_id": image_name})['metadatas'][0]
-    param.append(char['prod_name'])  # C
-    param.append(char['detail_desc'])
-    param.append(char['product_type_name'])  # E
-    param.append(char['product_group_name'])  # F
-    param.append(char['colour_group_name'])
+    metadata = col.get(ids=[image_name]).get('metadatas', [])
+    if metadata:
+        char = metadata[0]
+        param.append(char.get('prod_name'))  # C
+        param.append(char.get('detail_desc'))
+        param.append(char.get('product_type_name'))  # E
+        param.append(char.get('product_group_name'))  # F
+        param.append(char.get('colour_group_name'))
     return param
 
 
 def get_representative_image(col):
-    if not col.metadata["representative"]=="":
+    if not col.metadata["representative"] == "":
         rep = col.metadata["representative"]
     else:
         n_col = col.count()
@@ -174,8 +172,8 @@ def get_collection_for_modify():
     return cs
 
 
-def get_image_from_collection(id: int):
-    col = get_collection_from_index(id)
+def get_image_from_collection(id_col: int):
+    col = get_collection_from_index(id_col)
     n_col = col.count()
     peek = col.peek(limit=n_col)['metadatas']
     return peek, n_col, col.name
@@ -185,60 +183,42 @@ def retrieval_from_text(text: str, col_id: str):
     im = []
     n_results = os.getenv('N_OF_RESULTS')
     if col_id == "all":
-        index = 0
         for collection in chroma_client.list_collections():
-            index = index + 1
-            t = []
-            t.append(text)
+            index = int(re.search(r'\d+', collection.name).group())
+            t = [text]
             text_vector = fclip.encode_text(t, batch_size=8)
             r = collection.query(query_embeddings=text_vector.tolist(), n_results=int(n_results))
-            row = []
-            row.append(index)
-            row.append(r['ids'][0])
-            row.append(collection.name)
+            row = [[index] ** len(r['ids'][0]), [collection.name] * len(r['ids'][0]), r['ids'][0], r['distances'][0]]
             im.append(row)
     else:
         collection = get_collection_from_index(int(col_id))
-        t = []
-        t.append(text)
+        t = [text]
         text_vector = fclip.encode_text(t, batch_size=8)
         r = collection.query(query_embeddings=text_vector.tolist(), n_results=int(n_results))
-        row = []
-        row.append(col_id)
-        row.append(r['ids'][0])
-        row.append(collection.name)
+        row = [[col_id] * len(r['ids'][0]), [collection.name] * len(r['ids'][0]), r['ids'][0], r['distances'][0]]
         im.append(row)
-    return im
+    return sorted(im, key=lambda x: x[1])
 
 
-def get_label_from_image(url: str, col_id: str):
+def retrieval_from_image(img, col_id: str):
     im = []
     n_results = os.getenv('N_OF_RESULTS')
     if col_id == "all":
-        index = 0
         for collection in chroma_client.list_collections():
-            index = index + 1
-            t = []
-            t.append(url)
+            index = int(re.search(r'\d+', collection.name).group())
+            t = [img]
             image_vector = fclip.encode_images(t, batch_size=8)
             r = collection.query(query_embeddings=image_vector.tolist(), n_results=int(n_results))
-            row = []
-            row.append(index)
-            row.append(r['ids'][0])
-            row.append(collection.name)
+            row = [[index] * len(r['ids'][0]), [collection.name] * len(r['ids'][0]), r['ids'][0], r['distances'][0]]
             im.append(row)
     else:
         collection = get_collection_from_index(int(col_id))
-        t = []
-        t.append(url)
+        t = [img]
         image_vector = fclip.encode_images(t, batch_size=8)
         r = collection.query(query_embeddings=image_vector.tolist(), n_results=int(n_results))
-        row = []
-        row.append(col_id)
-        row.append(r['ids'][0])
-        row.append(collection.name)
+        row = [[col_id] * len(r['ids'][0]), [collection.name] * len(r['ids'][0]), r['ids'][0], r['distances'][0]]
         im.append(row)
-    return im
+    return sorted(im, key=lambda x: x[1])
 
 
 def get_len_of_collection():
@@ -256,7 +236,7 @@ def embedding_image(image_list, path):
 
 
 def set_dataset_json(name, rep):
-    if rep=="None":
+    if rep == "None":
         rep = ""
     else:
         rep = rep.split(".")
@@ -264,16 +244,16 @@ def set_dataset_json(name, rep):
     f = open(dataset_root / 'dataset.json')
     data = json.load(f)
     f.close()
-    id = len(data) + 1
-    n = "f_clip_" + str(id) + ".pkl"
-    fclip_path = str(dataset_root) + "/Fclip/f_clip_" + str(id) + ".pkl"
-    fclip_path_url = "dataset\\Fclip\\" + n
-    n = "collection_" + str(id) + ".json"
-    json_path = "dataset\\Metadata\\" + n
-    n = "collection_" + str(id)
-    image_path = "dataset\\Images\\" + n
+    id_col = len(data) + 1
+    n = "f_clip_" + str(id_col) + ".pkl"
+    fclip_path = str(dataset_root) + os.sep + "Fclip" + os.sep + "f_clip_" + str(id_col) + ".pkl"
+    fclip_path_url = "dataset" + os.sep + "Fclip" + os.sep + n
+    n = "collection_" + str(id_col) + ".json"
+    json_path = "dataset" + os.sep + "Metadata" + os.sep + n
+    n = "collection_" + str(id_col)
+    image_path = "dataset" + os.sep + "Images" + os.sep + n
     row = {
-        "collection": id,
+        "collection": id_col,
         "image_path": str(image_path),
         "metadata_path": str(json_path),
         "fclip_path": str(fclip_path_url),
@@ -286,13 +266,13 @@ def set_dataset_json(name, rep):
     return fclip_path
 
 
-def delete_col(id):
-    n = "f_clip_" + str(id) + ".pkl"
-    fclip_path = "dataset\\Fclip\\" + n
-    n = "collection_" + str(id) + ".json"
-    json_path = "dataset\\Metadata\\" + n
-    n = "collection_" + str(id)
-    image_path = "dataset\\Images\\" + n
+def delete_col(id_col):
+    n = "f_clip_" + str(id_col) + ".pkl"
+    fclip_path = "dataset" + os.sep + "Fclip" + os.sep + n
+    n = "collection_" + str(id_col) + ".json"
+    json_path = "dataset" + os.sep + "Metadata" + os.sep + n
+    n = "collection_" + str(id_col)
+    image_path = "dataset" + os.sep + "Images" + os.sep + n
     os.remove(server_base_path / fclip_path)
     os.remove(server_base_path / json_path)
     shutil.rmtree(server_base_path / image_path)
@@ -302,22 +282,22 @@ def delete_col(id):
     n = 1
     new_data = []
     for d in data:
-        if int(d['collection']) < int(id):
+        if int(d['collection']) < int(id_col):
             new_data.append(d)
             n = n + 1
-        if int(d['collection']) > int(id):
+        if int(d['collection']) > int(id_col):
             a = "f_clip_" + str(d['collection']) + ".pkl"
-            fclip_path = "dataset\\Fclip\\" + a
+            fclip_path = "dataset" + os.sep + "Fclip" + os.sep + a
             a = "collection_" + str(d['collection']) + ".json"
-            json_path = "dataset\\Metadata\\" + a
+            json_path = "dataset" + os.sep + "Metadata" + os.sep + a
             a = "collection_" + str(d['collection'])
-            image_path = "dataset\\Images\\" + a
+            image_path = "dataset" + os.sep + "Images" + os.sep + a
             a = "f_clip_" + str(n) + ".pkl"
-            new_fclip_path = "dataset\\Fclip\\" + a
+            new_fclip_path = "dataset" + os.sep + "Fclip" + os.sep + a
             a = "collection_" + str(n) + ".json"
-            new_json_path = "dataset\\Metadata\\" + a
+            new_json_path = "dataset" + os.sep + "Metadata" + os.sep + a
             a = "collection_" + str(n)
-            new_image_path = "dataset\\Images\\" + a
+            new_image_path = "dataset" + os.sep + "Images" + os.sep + a
             os.rename(server_base_path / image_path, server_base_path / new_image_path)
             os.rename(server_base_path / json_path, server_base_path / new_json_path)
             os.rename(server_base_path / fclip_path, server_base_path / new_fclip_path)
