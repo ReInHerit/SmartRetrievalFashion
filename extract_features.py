@@ -1,4 +1,5 @@
 import pickle
+import os
 import csv
 import json
 
@@ -9,13 +10,13 @@ f = open(dataset_root / 'dataset.json')
 data = json.load(f)
 fclip = FashionCLIP('fashion-clip')
 for i in data:
-    s = str(server_base_path) + "/" + i['metadata_path']
+    s = str(server_base_path) + os.sep + i['metadata_path']
     f = open(s, encoding="utf8")
     d = json.load(f)
     catalog = []
     images = []
     for j in d:
-        path = str(server_base_path) + "/" + str(i['image_path']) + "/" + str(j['article_id']) + ".jpg"
+        path = str(server_base_path) + os.sep + str(i['image_path']) + os.sep + str(j['article_id']) + ".jpg"
         catalog.append(
             {'id': j['article_id'], 'image': path, 'caption': j['detail_desc']})
         images.append(path)
