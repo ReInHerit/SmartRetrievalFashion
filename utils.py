@@ -16,12 +16,12 @@ def collate_fn(batch: list):
 
 
 def get_uri_to_metadata_dict(NOISYART_IMGS_PATH, NOISYART_JSON_PATH):
-    '''
+    """
     align the metadata.json classes order to the classes names order
     :param NOISYART_IMGS_PATH: noisyart classes path
     :param NOISYART_JSON_PATH: noisyart path to `metadata.json`
     :return: the aligned metadata
-    '''
+    """
     classes = sorted(os.listdir(NOISYART_IMGS_PATH))
     classes_dict = {}
     for c in classes:
