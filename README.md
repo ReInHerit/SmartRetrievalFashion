@@ -1,12 +1,12 @@
 
-# Smart Retrival Fashion
+# Smart Retrieval for Fashion
 
-A brief description of what this project does and who it's for
+A search engine for fashion images using CLIP fine tuned for fashion image retrieval.
 
 
 ## About Project
 
-This application ...
+This application has been developed within the ReInHerit Project.
 
 ### Built with
 * [Python](https://www.python.org/)
@@ -17,7 +17,8 @@ This application ...
 * [Flask](https://flask.palletsprojects.com/en/2.0.x/)
 * [Bootstrap](https://getbootstrap.com/)
 ## Installation
-For the installation i use conda and pip
+For the installation use Docker, the Dockerfile is provided in the repository.
+For development use .devcontainer provided in the repository.
 
 ### Setting UP
 Install this project with
@@ -28,5 +29,6 @@ Install this project with
 ```
 ## Authors
 
+- [@MarcoBertini](https://www.github.com/mbertini)
 - [@MugnaiLorenzo](https://www.github.com/MugnaiLorenzo)
 
