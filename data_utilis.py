@@ -164,10 +164,7 @@ def get_collection_for_modify():
     i = 0
     for col in chroma_client.list_collections():
         i = i + 1
-        row = []
-        row.append(col.name)
-        row.append(i)
-        row.append(get_representative_image(col))
+        row = [col.name, i, get_representative_image(col)]
         cs.append(row)
     return cs
 
