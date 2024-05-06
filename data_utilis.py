@@ -7,7 +7,6 @@ import PIL.Image
 import chromadb
 import json
 import random
-import re
 
 from fashion_clip.fashion_clip import FashionCLIP
 from pathlib import Path
@@ -16,11 +15,12 @@ from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normal
 from chromadb.config import Settings
 
 server_base_path = Path(__file__).absolute().parent.absolute()
-dataset_root = Path(__file__).absolute().parent.absolute() / 'dataset'
+dataset_path = os.getenv('DATASET_PATH', 'dataset')
+dataset_root = Path(__file__).absolute().parent.absolute() / dataset_path
 image_root = dataset_root / 'Images'
 data_path = Path(__file__).absolute().parent.absolute() / 'data'
 metadata_path = dataset_root / "Metadata"
-chroma_path = str(dataset_root) + "/chroma"
+chroma_path = str(dataset_root) + os.sep + "chroma"
 
 
 def load():
@@ -33,7 +33,7 @@ def load():
 
 
 def update_chroma():
-    print("UPDATE ...")
+    print("UPDATE ChromaDB...")
     global chroma_client
     global fclip
     if not os.path.exists(chroma_path):
@@ -51,6 +51,8 @@ def update_chroma():
     data = json.load(f)
     for i in data:
         metadata_dict = {
+            "id": i["collection"],
+            "image_path": i["image_path"],
             "representative": i["representative"]
         }
         collection = chroma_client.create_collection(name=i['name'], metadata=metadata_dict)
@@ -73,44 +75,39 @@ def update_chroma():
             metadatas=metadatas,
             ids=ids
         )
+    print("ChromaDB update completed.")
 
 
-def get_n_collection():
+def get_num_collection():
     return len(chroma_client.list_collections())
 
 
 def get_collection_from_index(i):
     for col in chroma_client.list_collections():
-        if col.name == 'collection' + str(i):
+        if col.metadata['id'] == i:
             return col
 
 
-def get_collections_name():
+def get_collection_id_from_name(name):
+    for col in chroma_client.list_collections():
+        if col.name == name:
+            return col.metadata['id']
+
+
+def get_collections():
     col_name = []
     for col in chroma_client.list_collections():
-        i = int(re.search(r'\d+', col.name).group())
-        row = []
-        row.append(i)
-        row.append(col.name)
+        i = col.metadata['id']
+        row = [i, col.name]
         col_name.append(row)
     return sorted(col_name, key=lambda x: x[1])
-
-
-def get_collections_name_from_id(id_col):
-    col_name = ""
-    i = 0
-    for col in chroma_client.list_collections():
-        i = i + 1
-        if i == id_col:
-            return col.name
-    return col_name
 
 
 def get_random_images(n_range):
     images = []
     for i in range(0, n_range):
         row = []
-        random_c = random.sample(range(get_n_collection()), 1)
+        random_c = random.sample(range(get_num_collection()), 1)
         random_c = random_c[0] + 1
         col = get_collection_from_index(random_c)
         n_col = col.count()
@@ -135,8 +132,8 @@ def get_url(root: str, name: str):
     return str(server_base_path) + os.sep + str(root) + os.sep + name + ".jpg"
 
 
-def setParam(image_name: str, collection: int):
-    col = get_collection_from_index(int(collection))
+def get_dress_info(image_name: str, collection_id: int):
+    col = get_collection_from_index(collection_id)
     param = []
     metadata = col.get(ids=[image_name]).get('metadatas', [])
     if metadata:
@@ -146,6 +143,7 @@ def setParam(image_name: str, collection: int):
         param.append(char.get('product_type_name'))  # E
         param.append(char.get('product_group_name'))  # F
         param.append(char.get('colour_group_name'))
+        param.append(col.name)  # H
     return param
 
 
@@ -181,11 +179,11 @@ def retrieval_from_text(text: str, col_id: str):
     n_results = os.getenv('N_OF_RESULTS')
     if col_id == "all":
         for collection in chroma_client.list_collections():
-            index = int(re.search(r'\d+', collection.name).group())
+            index = get_collection_id_from_name(collection.name)
             t = [text]
             text_vector = fclip.encode_text(t, batch_size=8)
             r = collection.query(query_embeddings=text_vector.tolist(), n_results=int(n_results))
-            row = [[index] ** len(r['ids'][0]), [collection.name] * len(r['ids'][0]), r['ids'][0], r['distances'][0]]
+            row = [[index] * len(r['ids'][0]), [collection.name] * len(r['ids'][0]), r['ids'][0], r['distances'][0]]
             im.append(row)
     else:
         collection = get_collection_from_index(int(col_id))
@@ -202,7 +200,7 @@ def retrieval_from_image(img, col_id: str):
     n_results = os.getenv('N_OF_RESULTS')
     if col_id == "all":
         for collection in chroma_client.list_collections():
-            index = int(re.search(r'\d+', collection.name).group())
+            index = get_collection_id_from_name(collection.name)
             t = [img]
             image_vector = fclip.encode_images(t, batch_size=8)
             r = collection.query(query_embeddings=image_vector.tolist(), n_results=int(n_results))

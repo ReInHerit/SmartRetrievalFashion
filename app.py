@@ -21,10 +21,10 @@ app.config['UPLOAD_TEMP'] = server_base_path / "static" / "Image" / "temporary_f
 @app.route('/home')
 def home():
     load()
-    if not data_utilis.is_load() or data_utilis.get_n_collection() == 0:
+    if not data_utilis.is_load() or data_utilis.get_num_collection() == 0:
         update_chroma()
     images = get_random_images(6)
-    return render_template('base.html', names=images, active="Home", cols=get_collections_name())
+    return render_template('base.html', names=images, active="Home", cols=get_collections())
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -38,11 +38,11 @@ def search():
         image = request.files['image']
         if not search == "":
             imgs = retrieval_from_text(search, collection)
-            return render_template('result.html', imgs=imgs, search=search, cols=get_collections_name())
+            return render_template('result.html', imgs=imgs, search=search, cols=get_collections())
         else:
             img = PIL.Image.open(image)
             imgs = retrieval_from_image(img.convert('RGB'), collection)
-            return render_template('result.html', imgs=imgs, search="", cols=get_collections_name())
+            return render_template('result.html', imgs=imgs, search="", cols=get_collections())
 
 
 @app.route('/search_similar/<string:image_name>/<int:collection>/<par>')
@@ -52,7 +52,7 @@ def search_similar(image_name: str, collection: str, par):
     path_image = str(image_root) + os.sep + "collection_" + str(collection) + os.sep + image_name + ".jpg"
     img = PIL.Image.open(path_image)
     imgs = retrieval_from_image(img.convert('RGB'), par)
-    return render_template('result.html', imgs=imgs, search="", cols=get_collections_name())
+    return render_template('result.html', imgs=imgs, search="", cols=get_collections())
 
 
 @app.route('/get_image/<string:image_name>/<int:collection>')
@@ -76,9 +76,9 @@ def get_image(image_name: str, collection: str, dim: Optional[int] = None):
 def char_image(image_name: str, collection: str):
     if not is_load():
         load()
-    param = setParam(image_name, int(collection))
+    param = get_dress_info(image_name, int(collection))
     return render_template('feature.html', id=image_name, collection=collection, param=param,
-                           cols=get_collections_name(), search_similar=True)
+                           cols=get_collections(), search_similar=True)
 
 
 @app.route('/add/')
@@ -111,10 +111,10 @@ def add_post():
 def modify():
     if not is_load():
         load()
-    if not data_utilis.is_load() or data_utilis.get_n_collection() == 0:
+    if not data_utilis.is_load() or data_utilis.get_num_collection() == 0:
         update_chroma()
     cs = get_collection_for_modify()
-    return render_template('modify.html', active="Modify", collections=cs, cols=get_collections_name())
+    return render_template('modify.html', active="Modify", collections=cs, cols=get_collections())
 
 
 @app.route('/collection/<col>')
