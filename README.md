@@ -21,12 +21,15 @@ For the installation use Docker, the Dockerfile is provided in the repository.
 For development use .devcontainer provided in the repository.
 
 ### Setting UP
-Install this project with
+Install this project with Conda, creating a new environment and installing the requirements with:
 
 ```bash
-  conda install pip
-  pip install requirements.txt
+  conda create --name SmartRetrievalFashion python=3.11
+  conda activate SmartRetrievalFashion
+  pip install -r requirements.txt
 ```
+
+Alternatively use the provided Dockerfile to build the image and run the container.
 
 Datasets should be stored in this directory structure:
 ```
@@ -50,6 +53,7 @@ dataset
 A sample dataset is provided as reference for the format.
 
 When the app is started the first time it will parse the dataset directory and build the ChromaDB index used to search the images.
+It will also download FashionClip model that will be installed in the environment or Docker image.
 
 ## Authors
 
