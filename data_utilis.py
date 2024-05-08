@@ -176,7 +176,7 @@ def get_image_from_collection(id_col: int):
 
 def retrieval_from_text(text: str, col_id: str):
     im = []
-    n_results = os.getenv('N_OF_RESULTS')
+    n_results = os.getenv('N_OF_RESULTS', 10)
     if col_id == "all":
         for collection in chroma_client.list_collections():
             index = get_collection_id_from_name(collection.name)
@@ -197,7 +197,7 @@ def retrieval_from_text(text: str, col_id: str):
 
 def retrieval_from_image(img, col_id: str):
     im = []
-    n_results = os.getenv('N_OF_RESULTS')
+    n_results = os.getenv('N_OF_RESULTS', 10)
     if col_id == "all":
         for collection in chroma_client.list_collections():
             index = get_collection_id_from_name(collection.name)
