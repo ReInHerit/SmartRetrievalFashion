@@ -10,7 +10,7 @@ from data_utilis import dataset_root, server_base_path, get_url
 def parse_args():
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('-v', '--verbose', action='store_true', help='increase output verbosity')
-    parser.add_argument('file', metavar='F', type=str, default=str(dataset_root / 'dataset.json'),
+    parser.add_argument('-f', '--file', type=str, default=str(dataset_root / 'dataset.json'),
                         help='JSON file describing all the datasets to be processed')
     return parser.parse_args()
 
@@ -36,7 +36,10 @@ def main(args):
         if args.verbose:
             print(f"Processing dataset: {dataset['name']} - {len(catalog)} images")
         images_embedded = fclip.encode_images(images, batch_size=8)
-        output_pickle_filename = server_base_path + os.sep + dataset['fclip_path']
+        output_pickle_directory = os.path.dirname(dataset['fclip_path'])
+        output_pickle_filename = dataset['fclip_path']
+        # create path if not existing
+        os.makedirs(os.path.dirname(output_pickle_directory), exist_ok=True)
         with open(output_pickle_filename, 'wb+') as f:
             if args.verbose:
                 print(f"Saving the embeddings to: {output_pickle_filename}")
