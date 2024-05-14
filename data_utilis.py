@@ -7,6 +7,7 @@ import PIL.Image
 import chromadb
 import json
 import random
+from dotenv import load_dotenv
 from more_itertools import batched
 
 from fashion_clip.fashion_clip import FashionCLIP
@@ -14,6 +15,9 @@ from pathlib import Path
 from typing import Optional
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
 from chromadb.config import Settings
+
+# Load the .env file
+load_dotenv()
 
 server_base_path = Path(__file__).absolute().parent.absolute()
 dataset_path = os.getenv('DATASET_PATH', 'dataset')
