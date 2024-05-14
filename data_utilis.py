@@ -7,6 +7,7 @@ import PIL.Image
 import chromadb
 import json
 import random
+from more_itertools import batched
 
 from fashion_clip.fashion_clip import FashionCLIP
 from pathlib import Path
@@ -59,22 +60,27 @@ def update_chroma():
         s = str(server_base_path) + os.sep + i['metadata_path']
         f = open(s, encoding="utf8")
         d = json.load(f)
-        document = []
+        documents = []
         ids = []
         metadatas = []
         for j in d:
-            document.append(j['detail_desc'])
+            documents.append(j['detail_desc'])
             ids.append(str(j['article_id']))
             metadatas.append(j)
         p = server_base_path / i['fclip_path']
         with open(p, 'rb') as c:
             image_embeddings = pickle.load(c)
-        collection.add(
-            embeddings=image_embeddings.tolist(),
-            documents=document,
-            metadatas=metadatas,
-            ids=ids
-        )
+        embeddings = image_embeddings.tolist()
+        document_indices = list(range(len(documents)))
+        for batch in batched(document_indices, 100000):
+            start_idx = batch[0]
+            end_idx = batch[-1]
+            collection.add(
+                ids=ids[start_idx:end_idx],
+                embeddings=embeddings[start_idx:end_idx],
+                metadatas=metadatas[start_idx:end_idx],
+                documents=documents[start_idx:end_idx]
+            )
     print("ChromaDB update completed.")
 
 
