@@ -5,11 +5,16 @@ import random
 import data_utilis
 import PIL.Image
 import shutil
+from dotenv import load_dotenv
 
 from flask import Flask, render_template, send_file, request, url_for, redirect
 from io import BytesIO
 from data_utilis import *
 from data_utilis import targetpad_resize
+
+# Load the .env file
+load_dotenv()
+port = int(os.environ.get("PORT", 5000))
 
 app = Flask(__name__)
 upload = image_root
@@ -283,5 +288,5 @@ def delete_image(col, image):
     update_chroma()
     return redirect(url_for('collection', col=col))
 
-# if __name__ == '__main__':
-# app.run()
+#if __name__ == '__main__':
+#    app.run(port=port)
