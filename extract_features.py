@@ -24,7 +24,11 @@ def main(args):
     fclip = FashionCLIP('fashion-clip')
     for dataset in datasets_json:
         single_dataset_file = str(server_base_path) + os.sep + dataset['metadata_path']
-        f = open(single_dataset_file, encoding="utf8")
+        try:
+            f = open(single_dataset_file, encoding="utf8")
+        except FileNotFoundError:
+            print(f"ERROR: File {single_dataset_file} not found. Skipping...")
+            continue
         single_dataset_json = json.load(f)
         catalog = []
         images = []
@@ -35,6 +39,8 @@ def main(args):
                 catalog.append({'id': j['article_id'], 'image': image_path, 'caption': j['detail_desc']})
                 # check it's an image using PIL
                 images.append(image_path)
+            else:
+                print(f"ERROR]: Image {image_path} is empty. Skipping...")
         if args.verbose:
             print(f"Processing dataset: {dataset['name']} - {len(catalog)} images")
         images_embedded = fclip.encode_images(images, batch_size=8)

@@ -120,17 +120,20 @@ def main(args):
             print(f"Processing {len(images_filenames)} images...")
         images_per_brand = {}
         for filename in images_filenames:
-            brand_name = extract_brand_name(os.path.basename(filename))
-            if brand_name != "":
-                if brand_name in images_per_brand:
-                    images_per_brand[brand_name].append(filename)
+            if os.path.getsize(filename) > 0:
+                brand_name = extract_brand_name(os.path.basename(filename))
+                if brand_name != "":
+                    if brand_name in images_per_brand:
+                        images_per_brand[brand_name].append(filename)
+                    else:
+                        images_per_brand[brand_name] = [filename]
                 else:
-                    images_per_brand[brand_name] = [filename]
+                    if "UNKNOWN BRAND" in images_per_brand:
+                        images_per_brand["UNKNOWN BRAND"].append(filename)
+                    else:
+                        images_per_brand["UNKNOWN BRAND"] = [filename]
             else:
-                if "UNKNOWN BRAND" in images_per_brand:
-                    images_per_brand["UNKNOWN BRAND"].append(filename)
-                else:
-                    images_per_brand["UNKNOWN BRAND"] = [filename]
+                print(f"[ERROR]: File {filename} is empty. Skipping...")
         if args.verbose:
             print(f"Found {len(images_per_brand)} brands")
             print("Saving JSON files...")
