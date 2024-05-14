@@ -99,7 +99,8 @@
     }
 
     function similar(image_name, collection) {
-        window.location.href = "http://127.0.0.1:5000/search_similar/"+image_name+"/"+collection+"/"+document.getElementById('collection').value
+        var port = window.location.port;
+        window.location.href = "http://127.0.0.1" + port + "/search_similar/"+image_name+"/"+collection+"/"+document.getElementById('collection').value
     }
 
 </script>
