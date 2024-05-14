@@ -31,8 +31,10 @@ def main(args):
         for j in single_dataset_json:
             image_path = str(server_base_path) + os.sep + str(dataset['image_path']) + os.sep + str(
                 j['article_id']) + ".jpg"
-            catalog.append({'id': j['article_id'], 'image': image_path, 'caption': j['detail_desc']})
-            images.append(image_path)
+            if os.path.getsize(image_path) > 0:
+                catalog.append({'id': j['article_id'], 'image': image_path, 'caption': j['detail_desc']})
+                # check it's an image using PIL
+                images.append(image_path)
         if args.verbose:
             print(f"Processing dataset: {dataset['name']} - {len(catalog)} images")
         images_embedded = fclip.encode_images(images, batch_size=8)
