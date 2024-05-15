@@ -13,9 +13,13 @@ args = parser.parse_args()
 
 # Source directory containing all the images
 source_directory = args.source_directory
+if not os.path.exists(source_directory):
+    raise ValueError(f"Source directory '{source_directory}' does not exist.")
 
 # Destination directory where the selected images will be copied
 destination_directory = args.destination_directory
+if not os.path.exists(destination_directory):
+    raise ValueError(f"Destination directory '{destination_directory}' does not exist.")
 
 # Number of images to be copied
 num_images_to_copy = args.num_images_to_copy
