@@ -52,9 +52,7 @@ def main():
     print("All images checked.")
     # Print results
     for result in results:
-        if result[0]:
-            print(f"Image at {result[1]} is readable.")
-        else:
+        if not result[0]:
             print(f"Image at {result[1]} is not readable.")
 
     # Log unreadable images
