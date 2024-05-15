@@ -123,7 +123,7 @@ def get_random_images(n_range):
         n_col = col.count()
         r = random.sample(range(n_col), 1)
         row.append(random_c)
-        row.append(col.peek(limit=n_col)['metadatas'][r[0]]['article_id'])
+        row.append(col.get(limit=1,offset=r[0])['metadatas'][0]['article_id'])
         images.append(row)
     return images
 
