@@ -86,7 +86,7 @@
             option.text = file[i].name;
             selectList.appendChild(option);
         }
-        document.getElementById("select_conteiner").style.display = "block";
+        document.getElementById("select_container").style.display = "block";
     });
 
     function loading() {
@@ -100,7 +100,7 @@
 
     function similar(image_name, collection) {
         var port = window.location.port;
-        window.location.href = "http://127.0.0.1" + port + "/search_similar/"+image_name+"/"+collection+"/"+document.getElementById('collection').value
+        window.location.href = "http://127.0.0.1:" + port + "/search_similar/"+image_name+"/"+collection+"/"+document.getElementById('collection').value
     }
 
 </script>
