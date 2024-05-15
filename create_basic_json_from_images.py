@@ -74,8 +74,8 @@ def create_dataset_json(images_per_brand: dict, images_directory: str, dataset_d
         item = {
             "collection": collection_id,
             "image_path": os.path.relpath(images_directory, "."),  # The directory where the images for the brand are stored
-            "metadata_path": os.path.relpath(dataset_directory, ".") + os.sep + "Metadata" + os.sep + "collection1.json",  # The path to the JSON file for the brand
-            "fclip_path": "",  # Fill in the appropriate value
+            "metadata_path": os.path.relpath(dataset_directory, ".") + os.sep + "Metadata" + os.sep + "collection_1.json",  # The path to the JSON file for the brand
+            "fclip_path": os.path.relpath(dataset_directory, ".") + os.sep + "Fclip" + os.sep + "f_clip_1.pkl",
             "name": "collection1",
             "representative": ""  # The first image in the list of images for the brand
         }
@@ -88,7 +88,8 @@ def create_dataset_json(images_per_brand: dict, images_directory: str, dataset_d
                 "collection": collection_id,
                 "image_path": images_directory,  # The directory where the images for the brand are stored
                 "metadata_path": dataset_directory + os.sep + brand_name_file,  # The path to the JSON file for the brand
-                "fclip_path": "",  # Fill in the appropriate value
+                "fclip_path": os.path.relpath(dataset_directory, ".") + os.sep + "Fclip" + os.sep + "f_clip_" + str(
+                    collection_id) + ".pkl",
                 "name": brand_name,
                 "representative": filenames[0] if filenames else ""  # The first image in the list of images for the brand
             }
@@ -103,6 +104,8 @@ def create_dataset_json(images_per_brand: dict, images_directory: str, dataset_d
 
 def main(args):
     input_directory = args.directory + os.sep + 'Images'
+    if not os.path.exists(input_directory):
+        raise ValueError(f"Images directory '{input_directory}' does not exist.")
     metadata_directory = args.directory + os.sep + 'Metadata'
     if not os.path.exists(metadata_directory):
         os.makedirs(metadata_directory)
