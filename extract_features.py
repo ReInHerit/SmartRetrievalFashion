@@ -44,6 +44,8 @@ def main(args):
         if args.verbose:
             print(f"Processing dataset: {dataset['name']} - {len(catalog)} images")
         images_embedded = fclip.encode_images(images, batch_size=8)
+        if args.verbose:
+            print(f"Images embeddings computed: {len(images_embedded)}")
         output_pickle_directory = os.path.dirname(dataset['fclip_path'])
         output_pickle_filename = dataset['fclip_path']
         # create path if not existing
