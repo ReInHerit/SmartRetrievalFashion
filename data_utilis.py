@@ -76,7 +76,10 @@ def update_chroma():
             image_embeddings = pickle.load(c)
         embeddings = image_embeddings.tolist()
         document_indices = list(range(len(documents)))
-        for batch in batched(document_indices, 100000):
+        num_batches = len(batched(document_indices, 41666))
+        current_batch = 1
+        for batch in batched(document_indices, 41666):  # maximum batch size 41666
+            print(f"Processing batch {current_batch + 1}/{num_batches}")
             start_idx = batch[0]
             end_idx = batch[-1]
             collection.add(
@@ -85,6 +88,7 @@ def update_chroma():
                 metadatas=metadatas[start_idx:end_idx],
                 documents=documents[start_idx:end_idx]
             )
+            current_batch += 1
     print("ChromaDB update completed.")
 
 
