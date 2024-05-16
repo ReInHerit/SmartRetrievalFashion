@@ -1,29 +1,42 @@
+.container-search{
+    height: 28vh;
+}
 .container-char {
     display: flex;
+    height: 58vh;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .container-char-image {
-    width: 70%;
+    width: 50vw;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+.container-char-image > img {
+    max-height: 50vh;
+}
 
 .container-char-info {
-    width: 30%;
+    padding: 0 0 7vh 0;
+    width: 45vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .char-title {
-    font-size: 25px;
-    font-family: var(--font-title);
+    font-size: 2vh;
+    font-family: var(--font-nav-li);
     font-weight: 900;
 }
 
 .char-info {
-    font-size: 16px;
+    font-size: 2.5vh;
+    padding-left: 2vh;
 }
 
 @media only screen and (max-width: 767px) {
@@ -31,40 +44,40 @@
         width: 60%;
     }
 
-    .container-char-info {
-        width: 40%;
-    }
+    /*.container-char-info {*/
+    /*    width: 40%;*/
+    /*}*/
 
-    .char-title {
-        font-size: 20px;
-    }
+    /*.char-title {*/
+    /*    font-size: 20px;*/
+    /*}*/
 
-    .char-info {
-        font-size: 16px;
-    }
+    /*.char-info {*/
+    /*    font-size: 16px;*/
+    /*}*/
 
-    .container-char-image img {
-        height: 420px;
-    }
+    /*.container-char-image img {*/
+    /*    height: 420px;*/
+    /*}*/
 }
 
 @media only screen and (max-width: 600px) {
     .container-char-image {
-        width: 100%;
+        width: 100vw;
         padding-top: 1.6rem;
         padding-bottom: 1.6rem;
     }
 
-    .container-char-info {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+    /*.container-char-info {*/
+    /*    width: 100%;*/
+    /*    display: flex;*/
+    /*    align-items: center;*/
+    /*    justify-content: center;*/
+    /*}*/
 }
 
 @media only screen and (max-width: 400px) {
-    .container-char-image img {
-        height: 320px;
-    }
+    /*.container-char-image img {*/
+    /*    height: 320px;*/
+    /*}*/
 }

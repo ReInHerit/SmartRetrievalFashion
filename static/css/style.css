@@ -12,16 +12,16 @@
 
 :root{
     /*Colori*/
-    --primary-color: #F3336A;
-    --nav-primary-color: #2F4858;
-    --nav-secondary-color: #355279;
-    --nav-dropdown-color: #5B5593;
+    --primary-color: #ec3d95;
+    --nav-primary-color: #009cde;
+    --nav-secondary-color: #006c9a;
+    --nav-dropdown-color: #88c03e;
     --nav-text-color: #FFFFFF;
-    --nav-text-select-color: #C93F8D;
+    --nav-text-select-color: #fbee03;
     --border: black;
     /*Font*/
     --font-nav-tile: 'Montserrat', sans-serif;
-    --font-nav-li: 'Open Sans', sans-serif;
+    --font-nav-li: 'Roboto', sans-serif;
     --font-sub-title: 'Libre Franklin', Helvetica, sans-serif;
     --font-title: "Josefin Sans",sans-serif;
     /*Size*/

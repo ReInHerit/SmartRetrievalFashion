@@ -2,21 +2,11 @@
 {% block content %}
     <div class="content">
         <div class="container-bg">
-            <div class="container-flex">
-                <div class="container-title">
-                    <div class="title">
-                        Smart Retrieval Fashion <br>
-                        <button class="btn-about">About us</button>
-                    </div>
-                </div>
-                <div class="container-title hidden-xs">
-                    <img src={{ url_for('static', filename='Image/dress.png') }}>
-                </div>
+            <div class="title">
+                Smart Retrieval Fashion
             </div>
         </div>
-        <object class="divider" data={{ url_for('static', filename='Image/wave.svg') }}></object>
         {% include 'tools/search-bar.html' %}
-        <object class="divider" data={{ url_for('static', filename='Image/wave-1.svg') }}></object>
         <div class="container-collection">
             <div class="sub-title">Or browse the clothes</div>
             <div class="container-images">
@@ -31,5 +21,5 @@
             </div>
         </div>
     </div>
-    <object class="divider bg-div" data={{ url_for('static', filename='Image/wave-2.svg') }}></object>
+{#    <object class="divider bg-div" data={{ url_for('static', filename='Image/wave-2.svg') }}></object>#}
 {% endblock %}

@@ -39,11 +39,11 @@
     width: 500px;
     background: var(--nav-dropdown-color);
     color: white;
-    height: 60px;
+    height: 5vh;
     border-radius: 50px;
     border: 0;
-    font-family: var(--font-title);
-    font-size: 20px;
+    font-family: var(--font-nav-li);
+    font-size: 3vh;
 }
 
 .container-c button {
@@ -74,6 +74,7 @@ a .img-delete {
 
 .modify-container-button {
     width: 100%;
+    padding-top: 10px;
     display: flex;
     align-items: center;
     justify-content: center;

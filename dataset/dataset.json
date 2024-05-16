@@ -13,7 +13,7 @@
     "metadata_path": "dataset/Metadata/collection_2.json",
     "fclip_path": "dataset/Fclip/f_clip_2.pkl",
     "name": "collection2",
-    "representative": ""
+    "representative": "617831002"
   },
   {
     "collection": 3,
@@ -21,7 +21,7 @@
     "metadata_path": "dataset/Metadata/collection_3.json",
     "fclip_path": "dataset/Fclip/f_clip_3.pkl",
     "name": "collection3",
-    "representative": ""
+    "representative": "707109001"
   },
   {
     "collection": 4,
@@ -29,6 +29,6 @@
     "metadata_path": "dataset/Metadata/collection_4.json",
     "fclip_path": "dataset/Fclip/f_clip_4.pkl",
     "name": "collection4",
-    "representative": ""
+    "representative": "798779001"
   }
 ]

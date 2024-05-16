@@ -11,21 +11,32 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet"/>
     <link href={{ url_for('static', filename='css/style.css') }} rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="{{ url_for('static', filename='boxicons/css/boxicons.min.css') }}" rel="stylesheet">
 </head>
 <body>
 <div id="page">
-    <header class="navbar navbar-inverse navbar-fixed-top bs-docs-nav" role="banner">
-        <div class="container">
-            <div class="navbar-header">
-                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <img class="icon" src={{ url_for('static', filename='Image/icon.png') }} alt="">
-                <span class="nav-title">Fashion</span>
+    <header>
+
+        <div id="header_title">
+
+            <a href="https://reinherit-hub.eu/applications" target="_blank" title="ReInHerit Digital Hub">
+                <img id="header_logo" alt="reinherit logo"
+                     src="{{ url_for('static', filename='Image/reinherit-logo-square-300x300.jpg') }}">
+            </a>
+            <div id="title">
+                <em>Re</em><strong>InHerit</strong>
+                <div id="undertitle">Redefining the Future of Cultural Heritage</div>
             </div>
+
+        </div>
+        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                                <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+        <div class="navbar-header">
+
             <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
                 <ul class="nav navbar-nav navbar-right">
                     {% if not active %}
@@ -59,9 +70,24 @@
     {% block content %}
     {% endblock %}
 
-    <div class="container-footer bg-d">
-        <div class="text-footer">Initial Design and Development by Lorenzo Mugnai | Extended and updated by Marco Bertini</div>
+    <footer id="footer">
+    <div class="footer_container">
+        <h3><em>Re</em><strong>InHerit</strong> Toolkit - Smart Retrieval Fashion </h3>
+
+        <div class="social-links">
+            <a href="https://twitter.com/reinherit_" target="_blank" title="twitter" class="twitter"><i
+                    class="bx bxl-twitter"></i></a>
+            <a href="https://www.facebook.com/ReInHerit/" target="_blank" title="facebook" class="facebook"><i
+                    class="bx bxl-facebook"></i></a>
+            <a href="https://www.instagram.com/reinherit_/" target="_blank" title="instagram" class="instagram"><i
+                    class="bx bxl-instagram"></i></a>
+            <a href="https://www.linkedin.com/company/reinherit-h2020" target="_blank" title="linkedin"
+               class="linkedin"><i class="bx bxl-linkedin"></i></a>
+            <a href="https://www.youtube.com/channel/UCWg6SySC2I-RQ41qjxZmTmA" target="_blank" title="youtube"
+               class="youtube"><i class="bx bxl-youtube"></i></a>
+        </div>
     </div>
+</footer>
     <div id="loading">
     </div>
 </div>
@@ -99,6 +125,7 @@
     }
 
     function similar(image_name, collection) {
+        loading();
         var port = window.location.port;
         var hostname = window.location.hostname;
         var protocol = window.location.protocol;

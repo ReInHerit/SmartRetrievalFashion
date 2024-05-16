@@ -1,8 +1,9 @@
 .cont-title {
     width: 100%;
     text-align: center;
-    font-size: 70px;
+    font-size: 3vw;
     font-family: var(--font-title);
+    padding-top: 10px;
     text-transform: uppercase;
     color: white;
 }
