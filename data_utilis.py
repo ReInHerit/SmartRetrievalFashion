@@ -76,10 +76,11 @@ def update_chroma():
             image_embeddings = pickle.load(c)
         embeddings = image_embeddings.tolist()
         document_indices = list(range(len(documents)))
-        num_batches = len(batched(document_indices, 41666))
+        batcher = batched(document_indices, 41666)
+        num_batches = len(list(batcher))
         current_batch = 1
         for batch in batched(document_indices, 41666):  # maximum batch size 41666
-            print(f"Processing batch {current_batch + 1}/{num_batches}")
+            print(f"Processing batch {current_batch}/{num_batches}")
             start_idx = batch[0]
             end_idx = batch[-1]
             collection.add(
