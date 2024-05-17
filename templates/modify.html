@@ -1,10 +1,14 @@
 {% extends "nav.html" %}
 {% block content %}
     <div class="content">
-        {% include 'tools/search-bar.html' %}
-{#        <object class="divider" data={{ url_for('static', filename='Image/wave-1.svg') }}></object>#}
         <div class="container-collection">
-            <div class="sub-title">Modify Collection</div>
+
+            <div class="sub-title">Modify Collection<label class="card-btn"
+                                                           onclick="window.location.href='{{ url_for('add') }}';" title="Add new collection">
+                <span class="plus-symbol"></span>
+            </label>
+            </div>
+
             <div class="container-collections">
                 {% for c in collections %}
                     <div class="container-c">
@@ -22,11 +26,10 @@
                         </a>
                     </div>
                 {% endfor %}
+
             </div>
-            <div class="modify-container-button">
-                <button class="card-btn" onclick="window.location.href='{{ url_for('add') }}';">Add collection</button>
-            </div>
+
+            <div class="bottom-margin"></div>
         </div>
     </div>
-{#    <object class="divider bg-div" data={{ url_for('static', filename='Image/wave-2.svg') }}></object>#}
 {% endblock content %}

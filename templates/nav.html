@@ -38,7 +38,7 @@
         <div class="navbar-header">
 
             <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
-                <ul class="nav navbar-nav navbar-right">
+                <ul class="nav navbar-nav">
                     {% if not active %}
                         <li>
                             <a href="/">Home</a>
@@ -96,6 +96,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script type="text/javascript">
+    $(document).ready(function() {
+        $('.navbar-collapse').on('show.bs.collapse', function () {
+            $('.navbar-header').addClass('animating');
+        });
+
+        $('.navbar-collapse').on('hide.bs.collapse', function () {
+            $('.navbar-header').addClass('animating');
+        });
+
+        $('.navbar-collapse').on('shown.bs.collapse hidden.bs.collapse', function () {
+            $('.navbar-header').removeClass('animating');
+        });
+    });
     $('#image').change(function () {
         {#var i = $(this).prev('label').clone();#}
         var form = document.getElementById('form_add_collection');
@@ -113,6 +126,7 @@
             selectList.appendChild(option);
         }
         document.getElementById("select_container").style.display = "block";
+
     });
 
     function loading() {

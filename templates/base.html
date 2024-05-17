@@ -9,7 +9,7 @@
         {% include 'tools/search-bar.html' %}
         <div class="container-collection">
             <div class="sub-title">Or browse the clothes</div>
-            <div class="container-images">
+            <div class="container-images clearfix">
                 {% for name in names %}
                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 container-image">
                         <a
@@ -19,7 +19,7 @@
                     </div>
                 {% endfor %}
             </div>
+            <div class="bottom-margin"></div>
         </div>
     </div>
-{#    <object class="divider bg-div" data={{ url_for('static', filename='Image/wave-2.svg') }}></object>#}
 {% endblock %}
