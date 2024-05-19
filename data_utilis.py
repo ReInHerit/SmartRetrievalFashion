@@ -174,10 +174,13 @@ def get_representative_image(col):
 
 def get_collection_for_modify():
     cs = []
-    i = 0
+    # i = 0
+    print(chroma_client.list_collections())
+
     for col in chroma_client.list_collections():
-        i = i + 1
-        row = [col.name, i, get_representative_image(col)]
+        print(col.name, col.metadata['id'])
+        # i = i + 1
+        row = [col.name, col.metadata['id'], get_representative_image(col)]
         cs.append(row)
     return cs
 

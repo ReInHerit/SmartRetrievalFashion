@@ -15,11 +15,17 @@ html {
     background-repeat: no-repeat;
     background-position: center;
 }
-/*.bs-navbar-collapse {*/
-/*    padding-top: 19vh;*/
-/*    padding-right: 10vw;*/
-/*    background-color: black;*/
-/*}*/
+.navbar-collapse {
+    padding: 0;
+}
+.in > ul, .animating > .navbar-collapse > ul {
+    padding-top: 15vh;
+    padding-right: 10vw;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+.navbar-header{
+    margin-right: 20px;
+}
 .navbar-header .icon {
     width: 40px;
     padding-top: 5px;
@@ -28,7 +34,7 @@ html {
 
 header {
     border-radius: 10px 10px 0 0;
-    width: 100%;
+    width: 100vw;
     height: 8vh;
     min-height: 40px;
     z-index: 1000;
@@ -59,13 +65,13 @@ header .container {
     display: flex;
     width: 280px;
     font-size: 4vh;
-    font-family: "Roboto", sans-serif;
+    font-family: var(--font-nav-li);
     align-items: center;
 }
 
 #undertitle {
     font-size: 1.5vh;
-    font-family: "Roboto", sans-serif;
+    font-family: var(--font-nav-li);
 }
 
 .align-items-center {
@@ -221,7 +227,7 @@ header .container {
     text-align: center;
     position: fixed;
     bottom: 0;
-    width: 100%;
+    width: 100vw;
     padding: 0;
     z-index: 10;
 }
@@ -271,10 +277,17 @@ header .container {
 }
 
 @media only screen and (max-width: 600px) {
-
-
+    .navbar-header {
+        margin-right: 20px;
+    }
     #footer .social-links a {
         font-size: 2vh;
         width: 4.5vw;
+    }
+}
+
+@media (max-height: 500px) {
+    .navbar-header {
+        margin-right: 35px;
     }
 }

@@ -65,6 +65,7 @@ def search_similar(image_name: str, collection: str, par):
 def get_image(image_name: str, collection: str, dim: Optional[int] = None):
     if not is_load():
         load()
+    print("get_image", image_name, collection, dim)
     path_image = str(image_root) + os.sep + "collection_" + str(collection) + os.sep + image_name + ".jpg"
     if dim:
         transform = targetpad_resize(1.25, int(dim), 255)
@@ -119,7 +120,9 @@ def modify():
     if not data_utilis.is_load() or data_utilis.get_num_collection() == 0:
         update_chroma()
     cs = get_collection_for_modify()
-    return render_template('modify.html', active="Modify", collections=cs, cols=get_collections())
+    # alphabetical order
+    cs_sorted = sorted(cs, key=lambda x: x[0])
+    return render_template('modify.html', active="Modify", collections=cs_sorted, cols=get_collections())
 
 
 @app.route('/collection/<col>')
@@ -287,6 +290,3 @@ def delete_image(col, image):
     data_utilis.embedding_image(images, f_clip_path)
     update_chroma()
     return redirect(url_for('collection', col=col))
-
-#if __name__ == '__main__':
-#    app.run(port=port)

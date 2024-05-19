@@ -7,7 +7,7 @@
                 <img src={{ url_for('get_image', image_name=id, collection=collection, dim=520) }}>
             </div>
             <div class="container-char-info">
-                <div>
+                <div class="info">
                     <div class="char-title">Name of the article</div>
                     <div class="char-info">{{ param[0] }}</div>
                     <div class="char-title">Description</div>
@@ -34,5 +34,4 @@
         </div>
     </div>
 
-    {#    <object class="divider" data={{ url_for('static', filename='Image/wave-2.svg') }}></object>#}
 {% endblock %}
