@@ -3,6 +3,8 @@
 
 A search engine for fashion images using CLIP fine-tuned for fashion image retrieval.
 
+![Smart Retrieval logo](static/Image/smart_retrieval_logo.jpg)
+
 
 ## About Project
 
@@ -58,5 +60,6 @@ It will also download FashionClip model that will be installed in the environmen
 ## Authors
 
 - [@MarcoBertini](https://www.github.com/mbertini)
+- [@FilippoPrincipi](https://www.github.com/no-made)
 - [@MugnaiLorenzo](https://www.github.com/MugnaiLorenzo)
 
